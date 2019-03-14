@@ -19,13 +19,14 @@ information
 
 The `<xr-mdl>` tag supports the following attributes.
 
-| Attribute        | Function           |
-| ------ |-------------|
-| obj | Specify the name to of the .obj file. |
-| mtl | Specify the name to of the .mtl file. |
-| obj | Specify the directory to the textures from. |
-| desktop | Show the model on the desktop as well. Defaults to false. |
-
+| Attribute|Function|Type| Example |
+| ---|-------------|---|
+| obj | Specify the name to of the .obj file. | String | r2d2.obj |
+| mtl | Specify the name to of the .mtl file. | String  | r2d2.mtl |
+| obj | Specify the directory to the textures from. | String | ./assets/r2d2/ |
+| desktop | Show the model on the desktop as well. Defaults to false. | Bool | false |
+| scale| Specify the scale of the model| String | 1,1,1 |
+| position | Specify the position of the model | String | 0,0,0 |
 ### Run the Demo
 Start the express server in the example directory.
 ```bash

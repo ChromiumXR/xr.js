@@ -45,6 +45,23 @@ class Model extends HTMLElement{
     		return 'none'
 		}
 	}
+
+	getPosition() {
+    	let positions = this.getAttribute('position').split(',');
+    	return {
+    		x: parseFloat(positions[0]),
+			y: parseFloat(positions[1]),
+			z: parseFloat(positions[2])
+		}
+	}
+	getScale() {
+		let scales = this.getAttribute('scale').split(',');
+		return {
+			x: parseFloat(scales[0]),
+			y: parseFloat(scales[1]),
+			z: parseFloat(scales[2])
+		}
+	}
 }
 
 customElements.define('xr-mdl', Model);
@@ -55,6 +72,10 @@ function updateModel (element) {
     const objectPath = element.getObjectPath();
     const texturePath = element.getTexturePath();
 	const displayValue = element.getDisplay();
+	//todo: figure out if this is needed
+	const position = element.getPosition();
+	const scale = element.getScale();
+
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -68,7 +89,9 @@ function updateModel (element) {
     vrButton.style.display = displayValue;
     document.body.appendChild( vrButton );
     renderer.vr.enabled = true;
-    document.body.appendChild( renderer.domElement );
+    //renderer.vr.scale.set(scale.x, scale.y, scale.z);
+	//renderer.vr.position.set(position.x, position.y, position.z);
+	document.body.appendChild( renderer.domElement );
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -101,7 +124,8 @@ function updateModel (element) {
         objLoader.load(objectPath, function (object) {
 
             scene.add(object);
-            object.position.y -= 60;
+            object.position.set(position.x, position.y, position.z);
+			object.scale.set(scale.x, scale.y, scale.z);
 
         });
 
