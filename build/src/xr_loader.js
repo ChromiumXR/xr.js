@@ -62,6 +62,14 @@ class Model extends HTMLElement{
 			z: parseFloat(scales[2])
 		}
 	}
+	getRotation() {
+		let rotations = this.getAttribute('rotation').split(',');
+		return {
+			x: parseFloat(rotations[0]) * (Math.PI/180),
+			y: parseFloat(rotations[1]) * (Math.PI/180),
+			z: parseFloat(rotations[2]) * (Math.PI/180)
+		}
+	}
 }
 
 customElements.define('xr-mdl', Model);
@@ -72,9 +80,10 @@ function updateModel (element) {
     const objectPath = element.getObjectPath();
     const texturePath = element.getTexturePath();
 	const displayValue = element.getDisplay();
-	//todo: figure out if this is needed
+
 	const position = element.getPosition();
 	const scale = element.getScale();
+	const rotation = element.getRotation();
 
     const scene = new THREE.Scene();
 
@@ -126,6 +135,7 @@ function updateModel (element) {
             scene.add(object);
             object.position.set(position.x, position.y, position.z);
 			object.scale.set(scale.x, scale.y, scale.z);
+			object.rotation.set(rotation.x, rotation.y, rotation.z)
 
         });
 

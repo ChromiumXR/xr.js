@@ -27,6 +27,8 @@ The `<xr-mdl>` tag supports the following attributes.
 | desktop | Show the model on the desktop as well. Defaults to false. | Bool | false |
 | scale| Specify the scale of the model| String | 1,1,1 |
 | position | Specify the position of the model | String | 0,0,0 |
+| rotation | Specify the position of the model | String | 90,90,90 |
+
 ### Run the Demo
 Start the express server in the example directory.
 ```bash
