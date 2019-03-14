@@ -1,0 +1,16 @@
+{
+  "name": "xr-loader_example",
+  "version": "1.0.0",
+  "description": "A simple demo for XR_Loader",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node index.js",
+    "start": "node index.js"
+  },
+  "author": "Morgan Dean",
+  "license": "ISC"
+}
