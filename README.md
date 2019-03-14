@@ -20,7 +20,7 @@ information
 The `<xr-mdl>` tag supports the following attributes.
 
 | Attribute|Function|Type| Example |
-| ---|-------------|---|
+| ---|-------------|---|---|
 | obj | Specify the name to of the .obj file. | String | r2d2.obj |
 | mtl | Specify the name to of the .mtl file. | String  | r2d2.mtl |
 | obj | Specify the directory to the textures from. | String | ./assets/r2d2/ |
