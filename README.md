@@ -14,7 +14,7 @@ In the body of your index.html create an `<xr-mdl>` tag and fill it with the req
 information
 
 ```html
-<xr-mdl obj="r2-d2.obj" mtl="r2-d2.mtl" texturePath="./r2d2/" desktop="true"></xr-mdl>
+<xr-mdl obj="r2-d2.obj" mtl="r2-d2.mtl" texturePath="./r2d2/" scale="1,1,1" position="2,2,2"  desktop="true"></xr-mdl>
 ```
 
 The `<xr-mdl>` tag supports the following attributes.
