@@ -1,9 +1,69 @@
-
-
-class Model extends HTMLElement{
-    constructor(){
-        super()
+// Custom HTML Element <xr-mdl>
+class XRModel extends HTMLElement{
+    constructor(settings) {
+        super();
+        this.obj = settings.obj;
+        this.mtl = settings.mtl;
+        this.texturePath = settings.texturePath;
+        this.scale = settings.scale || '1,1,1';
+        this.position = settings.position || '0,0,0,';
+        this.rotation = settings.rotation || '0,0,0,';
+        this.desktop = settings.desktop || false;
     }
+
+    build() {
+        console.log("building!");
+        this.setAttribute('obj', this.obj);
+        this.setAttribute('mtl', this.mtl);
+        this.setAttribute('texturePath', this.texturePath);
+        this.setAttribute('scale', this.scale);
+        this.setAttribute('position', this.position);
+        this.setAttribute('rotation', this.rotation);
+        this.setAttribute('desktop', this.desktop);
+        document.body.appendChild(this);
+    }
+
+    setObject(obj) {
+        this.obj = obj;
+        this.setAttribute('obj', this.obj);
+    }
+
+    setMaterial(mtl) {
+        this.mtl = mtl;
+        this.setAttribute('mtl', this.mtl);
+
+    }
+
+    setTexturePath(path) {
+        this.texturePath = path;
+        this.setAttribute('texturePath', this.texturePath);
+        this.setAttribute('position', this.position);
+
+    }
+
+    setScale(x,y,z) {
+        this.scale = x + ',' + y + ',' + z;
+        this.setAttribute('scale', this.scale);
+
+    }
+
+    setPosition(x,y,z) {
+        this.position = x + ',' + y + ',' + z;
+        this.setAttribute('position', this.position);
+
+    }
+
+    setRotation(x,y,z) {
+        this.rotation = x + ',' + y + ',' + z;
+        this.setAttribute('rotation', this.rotation);
+
+    }
+
+    setDesktop(bool) {
+        this.desktop = bool;
+        this.setAttribute('desktop', this.desktop);
+    }
+
     connectedCallback() {
         console.log('Custom element added to page.');
         updateModel(this);
@@ -72,7 +132,7 @@ class Model extends HTMLElement{
 	}
 }
 
-customElements.define('xr-mdl', Model);
+customElements.define('xr-mdl', XRModel);
 
 
 function updateModel (element) {
