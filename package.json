@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/ChromiumXR/xrloader/issues"
   },
-  "homepage": "https://github.com/ChromiumXR/xrloader#readme"
+  "homepage": "https://github.com/ChromiumXR/xrloader#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
 }
