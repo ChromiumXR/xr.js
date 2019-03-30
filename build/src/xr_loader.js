@@ -1,14 +1,17 @@
 // Custom HTML Element <xr-mdl>
-class XRModel extends HTMLElement{
+class XRModel extends HTMLElement {
     constructor(settings) {
         super();
-        this.obj = settings.obj;
-        this.mtl = settings.mtl;
-        this.texturePath = settings.texturePath;
-        this.scale = settings.scale || '1,1,1';
-        this.position = settings.position || '0,0,0,';
-        this.rotation = settings.rotation || '0,0,0,';
-        this.desktop = settings.desktop || false;
+        if (settings) {
+            this.obj = settings.obj;
+            this.mtl = settings.mtl;
+            this.texturePath = settings.texturePath;
+            this.scale = settings.scale || '1,1,1';
+            this.position = settings.position || '0,0,0,';
+            this.rotation = settings.rotation || '0,0,0,';
+            this.desktop = settings.desktop || false;
+            this.appendElementId = settings.elementId
+        }
     }
 
     build() {
@@ -41,19 +44,19 @@ class XRModel extends HTMLElement{
 
     }
 
-    setScale(x,y,z) {
+    setScale(x, y, z) {
         this.scale = x + ',' + y + ',' + z;
         this.setAttribute('scale', this.scale);
 
     }
 
-    setPosition(x,y,z) {
+    setPosition(x, y, z) {
         this.position = x + ',' + y + ',' + z;
         this.setAttribute('position', this.position);
 
     }
 
-    setRotation(x,y,z) {
+    setRotation(x, y, z) {
         this.rotation = x + ',' + y + ',' + z;
         this.setAttribute('rotation', this.rotation);
 
@@ -64,10 +67,15 @@ class XRModel extends HTMLElement{
         this.setAttribute('desktop', this.desktop);
     }
 
+    setElementId(elemId) {
+        this.appendElementId = elemId
+    }
+
     connectedCallback() {
         console.log('Custom element added to page.');
         updateModel(this);
     }
+
     disconnectedCallback() {
         console.log('Custom element removed from page.');
     }
@@ -75,11 +83,15 @@ class XRModel extends HTMLElement{
     adoptedCallback() {
         console.log('Custom element moved to new page.');
     }
+
     attributeChangedCallback(name, oldValue, newValue) {
         console.log('Custom element attributes changed.');
         updateModel(this);
     }
-    static get observedAttributes() { return ['c', 'l']; }
+
+    static get observedAttributes() {
+        return ['c', 'l'];
+    }
 
     getWidth() {
         return this.style.width.replace(/[a-z]/g, '')
@@ -92,58 +104,63 @@ class XRModel extends HTMLElement{
     getObjectPath() {
         return this.getAttribute('obj')
     }
+
     getMaterialPath() {
         return this.getAttribute('mtl')
     }
+
     getTexturePath() {
         return this.getAttribute('texturePath')
     }
-    getDisplay() {
-    	if (this.getAttribute('desktop') === 'true') {
-    		return 'inherit'
-		} else {
-    		return 'none'
-		}
-	}
 
-	getPosition() {
-    	let positions = this.getAttribute('position').split(',');
-    	return {
-    		x: parseFloat(positions[0]),
-			y: parseFloat(positions[1]),
-			z: parseFloat(positions[2])
-		}
-	}
-	getScale() {
-		let scales = this.getAttribute('scale').split(',');
-		return {
-			x: parseFloat(scales[0]),
-			y: parseFloat(scales[1]),
-			z: parseFloat(scales[2])
-		}
-	}
-	getRotation() {
-		let rotations = this.getAttribute('rotation').split(',');
-		return {
-			x: parseFloat(rotations[0]) * (Math.PI/180),
-			y: parseFloat(rotations[1]) * (Math.PI/180),
-			z: parseFloat(rotations[2]) * (Math.PI/180)
-		}
-	}
+    getDisplay() {
+        if (this.getAttribute('desktop') === 'true') {
+            return 'inherit'
+        } else {
+            return 'none'
+        }
+    }
+
+    getPosition() {
+        let positions = this.getAttribute('position').split(',');
+        return {
+            x: parseFloat(positions[0]),
+            y: parseFloat(positions[1]),
+            z: parseFloat(positions[2])
+        }
+    }
+
+    getScale() {
+        let scales = this.getAttribute('scale').split(',');
+        return {
+            x: parseFloat(scales[0]),
+            y: parseFloat(scales[1]),
+            z: parseFloat(scales[2])
+        }
+    }
+
+    getRotation() {
+        let rotations = this.getAttribute('rotation').split(',');
+        return {
+            x: parseFloat(rotations[0]) * (Math.PI / 180),
+            y: parseFloat(rotations[1]) * (Math.PI / 180),
+            z: parseFloat(rotations[2]) * (Math.PI / 180)
+        }
+    }
 }
 
 customElements.define('xr-mdl', XRModel);
 
 
-function updateModel (element) {
+function updateModel(element) {
     const materialPath = element.getMaterialPath();
     const objectPath = element.getObjectPath();
     const texturePath = element.getTexturePath();
-	const displayValue = element.getDisplay();
+    const displayValue = element.getDisplay();
 
-	const position = element.getPosition();
-	const scale = element.getScale();
-	const rotation = element.getRotation();
+    const position = element.getPosition();
+    const scale = element.getScale();
+    const rotation = element.getRotation();
 
     const scene = new THREE.Scene();
 
@@ -154,13 +171,17 @@ function updateModel (element) {
     renderer.setSize(window.innerWidth, window.innerHeight);
     //todo: hide the canvas so it only appears in unity
     renderer.domElement.style.display = displayValue;
-    let vrButton = WEBVR.createButton( renderer );
+    let vrButton = WEBVR.createButton(renderer);
     vrButton.style.display = displayValue;
-    document.body.appendChild( vrButton );
+    document.body.appendChild(vrButton);
     renderer.vr.enabled = true;
     //renderer.vr.scale.set(scale.x, scale.y, scale.z);
-	//renderer.vr.position.set(position.x, position.y, position.z);
-	document.body.appendChild( renderer.domElement );
+    //renderer.vr.position.set(position.x, position.y, position.z);
+    if (element.appendElementId) {
+        document.getElementById(element.appendElementId).appendChild(renderer.domElement)
+    } else {
+        document.body.appendChild(renderer.domElement);
+    }
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -194,8 +215,8 @@ function updateModel (element) {
 
             scene.add(object);
             object.position.set(position.x, position.y, position.z);
-			object.scale.set(scale.x, scale.y, scale.z);
-			object.rotation.set(rotation.x, rotation.y, rotation.z)
+            object.scale.set(scale.x, scale.y, scale.z);
+            object.rotation.set(rotation.x, rotation.y, rotation.z)
 
         });
 
