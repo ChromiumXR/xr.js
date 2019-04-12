@@ -1,3 +1,57 @@
+let scene;
+
+const XRLoader = {
+    initialized: false,
+    init: (options) => {
+        let displayValue = options.desktop;
+        let elementId = options.id;
+
+        scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 200;
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.domElement.style.display = displayValue;
+        let vrButton = WEBVR.createButton(renderer);
+        vrButton.style.display = displayValue;
+        document.body.appendChild(vrButton);
+        renderer.vr.enabled = true;
+
+        if (elementId) {
+            document.getElementById(elementId).appendChild(renderer.domElement)
+        } else {
+            document.body.appendChild(renderer.domElement);
+        }
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.25;
+        controls.enableZoom = true;
+
+        const keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 1.0);
+        keyLight.position.set(-100, 0, 100);
+
+        const fillLight = new THREE.DirectionalLight(new THREE.Color('hsl(240, 100%, 75%)'), 0.75);
+        fillLight.position.set(100, 0, 100);
+
+        const backLight = new THREE.DirectionalLight(0xffffff, 1.0);
+        backLight.position.set(100, 0, -100).normalize();
+
+        scene.add(keyLight);
+        scene.add(fillLight);
+        scene.add(backLight);
+
+        const animate = function () {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        };
+
+        animate();
+    }
+};
+
 // Custom HTML Element <xr-mdl>
 class XRModel extends HTMLElement {
     constructor(settings) {
@@ -73,6 +127,7 @@ class XRModel extends HTMLElement {
 
     connectedCallback() {
         console.log('Custom element added to page.');
+        if (!XRLoader.initialized) XRLoader.init({desktop: this.getDisplay(), id: this.getAttribute('id')});
         updateModel(this);
     }
 
@@ -156,50 +211,10 @@ function updateModel(element) {
     const materialPath = element.getMaterialPath();
     const objectPath = element.getObjectPath();
     const texturePath = element.getTexturePath();
-    const displayValue = element.getDisplay();
 
     const position = element.getPosition();
     const scale = element.getScale();
     const rotation = element.getRotation();
-
-    const scene = new THREE.Scene();
-
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 200;
-
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    //todo: hide the canvas so it only appears in unity
-    renderer.domElement.style.display = displayValue;
-    let vrButton = WEBVR.createButton(renderer);
-    vrButton.style.display = displayValue;
-    document.body.appendChild(vrButton);
-    renderer.vr.enabled = true;
-    //renderer.vr.scale.set(scale.x, scale.y, scale.z);
-    //renderer.vr.position.set(position.x, position.y, position.z);
-    if (element.appendElementId) {
-        document.getElementById(element.appendElementId).appendChild(renderer.domElement)
-    } else {
-        document.body.appendChild(renderer.domElement);
-    }
-
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.25;
-    controls.enableZoom = true;
-
-    const keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 1.0);
-    keyLight.position.set(-100, 0, 100);
-
-    const fillLight = new THREE.DirectionalLight(new THREE.Color('hsl(240, 100%, 75%)'), 0.75);
-    fillLight.position.set(100, 0, 100);
-
-    const backLight = new THREE.DirectionalLight(0xffffff, 1.0);
-    backLight.position.set(100, 0, -100).normalize();
-
-    scene.add(keyLight);
-    scene.add(fillLight);
-    scene.add(backLight);
 
     const mtlLoader = new THREE.MTLLoader();
     mtlLoader.setTexturePath(texturePath);
@@ -221,12 +236,4 @@ function updateModel(element) {
         });
 
     });
-
-    const animate = function () {
-        requestAnimationFrame(animate);
-        controls.update();
-        renderer.render(scene, camera);
-    };
-
-    animate();
 }
