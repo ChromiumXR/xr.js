@@ -10,45 +10,51 @@ const XRLoader = {
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.z = 200;
 
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.domElement.style.display = displayValue;
-        let vrButton = WEBVR.createButton(renderer);
-        vrButton.style.display = displayValue;
-        document.body.appendChild(vrButton);
-        renderer.vr.enabled = true;
+        navigator.getARDisplay().then((compositor) => {
+            console.log(compositor);
+            const renderer = new THREE.WebGLRenderer({alpha: true, canvas: compositor.canvas});
+            //renderer.setClearColor(0xffffff, 0);
 
-        if (elementId) {
-            document.getElementById(elementId).appendChild(renderer.domElement)
-        } else {
-            document.body.appendChild(renderer.domElement);
-        }
+            //const renderer = new THREE.WebGLRenderer();
+            //renderer.setSize(window.innerWidth, window.innerHeight);
+            //renderer.domElement.style.display = displayValue;
+            let vrButton = WEBVR.createButton(renderer);
+            vrButton.style.display = displayValue;
+            document.body.appendChild(vrButton);
+            renderer.vr.enabled = true;
 
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.25;
-        controls.enableZoom = true;
+           /* if (elementId) {
+                document.getElementById(elementId).appendChild(renderer.domElement)
+            } else {
+                document.body.appendChild(renderer.domElement);
+            }*/
 
-        const keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 1.0);
-        keyLight.position.set(-100, 0, 100);
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.25;
+            controls.enableZoom = true;
 
-        const fillLight = new THREE.DirectionalLight(new THREE.Color('hsl(240, 100%, 75%)'), 0.75);
-        fillLight.position.set(100, 0, 100);
+            const keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 1.0);
+            keyLight.position.set(-100, 0, 100);
 
-        const backLight = new THREE.DirectionalLight(0xffffff, 1.0);
-        backLight.position.set(100, 0, -100).normalize();
+            const fillLight = new THREE.DirectionalLight(new THREE.Color('hsl(240, 100%, 75%)'), 0.75);
+            fillLight.position.set(100, 0, 100);
 
-        scene.add(keyLight);
-        scene.add(fillLight);
-        scene.add(backLight);
+            const backLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            backLight.position.set(100, 0, -100).normalize();
 
-        const animate = function () {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        };
+            scene.add(keyLight);
+            scene.add(fillLight);
+            scene.add(backLight);
 
-        animate();
+            const animate = function () {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            };
+
+            animate();
+        });
     }
 };
 
