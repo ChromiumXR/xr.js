@@ -1,6 +1,7 @@
 XRLoader.init({desktop: true, id: 'ha'});
-let model = new XRModel({ obj: 'r2-d2.obj', mtl: 'r2-d2.mtl', texturePath: './r2d2/'});
+/*let model = new XRModel({ obj: 'r2-d2.obj', mtl: 'r2-d2.mtl', texturePath: './r2d2/'});
 
 model.setRotation(90, 90, 90);
 model.setScale(.01, .01, .01);
 model.build();
+*/

@@ -3,31 +3,20 @@ let scene;
 const XRLoader = {
     initialized: false,
     init: (options) => {
-        let displayValue = options.desktop;
-        let elementId = options.id;
 
         scene = new THREE.Scene();
+        let displayValue = options.desktop;
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.z = 200;
 
         navigator.getARDisplay().then((compositor) => {
             console.log(compositor);
-            const renderer = new THREE.WebGLRenderer({alpha: true, canvas: compositor.canvas});
-            //renderer.setClearColor(0xffffff, 0);
+            const renderer = new THREE.WebGLRenderer({alpha: false, canvas: compositor.canvas});
 
-            //const renderer = new THREE.WebGLRenderer();
-            //renderer.setSize(window.innerWidth, window.innerHeight);
-            //renderer.domElement.style.display = displayValue;
             let vrButton = WEBVR.createButton(renderer);
             vrButton.style.display = displayValue;
             document.body.appendChild(vrButton);
             renderer.vr.enabled = true;
-
-           /* if (elementId) {
-                document.getElementById(elementId).appendChild(renderer.domElement)
-            } else {
-                document.body.appendChild(renderer.domElement);
-            }*/
 
             const controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
@@ -51,11 +40,21 @@ const XRLoader = {
                 requestAnimationFrame(animate);
                 controls.update();
                 renderer.render(scene, camera);
+                document.querySelectorAll('xr-mdl').forEach((element) => {
+                    const position = element.getPosition();
+                    const scale = element.getScale();
+                    const rotation = element.getRotation();
+                    if (element.object) {
+                        element.object.position.set(position.x, position.y, position.z);
+                        element.object.scale.set(scale.x, scale.y, scale.z);
+                        element.object.rotation.set(rotation.x, rotation.y, rotation.z)
+                    }
+                });
             };
 
             animate();
         });
-    }
+    },
 };
 
 // Custom HTML Element <xr-mdl>
@@ -67,10 +66,9 @@ class XRModel extends HTMLElement {
             this.mtl = settings.mtl;
             this.texturePath = settings.texturePath;
             this.scale = settings.scale || '1,1,1';
-            this.position = settings.position || '0,0,0,';
+            this.offset = settings.offset || '0,0,0,';
             this.rotation = settings.rotation || '0,0,0,';
             this.desktop = settings.desktop || false;
-            this.appendElementId = settings.elementId
         }
     }
 
@@ -80,7 +78,7 @@ class XRModel extends HTMLElement {
         this.setAttribute('mtl', this.mtl);
         this.setAttribute('texturePath', this.texturePath);
         this.setAttribute('scale', this.scale);
-        this.setAttribute('position', this.position);
+        this.setAttribute('offset', this.offset);
         this.setAttribute('rotation', this.rotation);
         this.setAttribute('desktop', this.desktop);
         document.body.appendChild(this);
@@ -100,7 +98,7 @@ class XRModel extends HTMLElement {
     setTexturePath(path) {
         this.texturePath = path;
         this.setAttribute('texturePath', this.texturePath);
-        this.setAttribute('position', this.position);
+        this.setAttribute('offset', this.offset);
 
     }
 
@@ -110,9 +108,9 @@ class XRModel extends HTMLElement {
 
     }
 
-    setPosition(x, y, z) {
-        this.position = x + ',' + y + ',' + z;
-        this.setAttribute('position', this.position);
+    setOffset(x, y, z) {
+        this.offset = x + ',' + y + ',' + z;
+        this.setAttribute('offset', this.offset);
 
     }
 
@@ -183,7 +181,17 @@ class XRModel extends HTMLElement {
     }
 
     getPosition() {
-        let positions = this.getAttribute('position').split(',');
+        let rect = this.getBoundingClientRect();
+
+        let positions = this.getAttribute('offset').split(',');
+        if (window.navigator && window.navigator.xrlocation) {
+            let screen = window.navigator.xrlocation;
+            const q = new THREE.Quaternion(screen.orientation.x, screen.orientation.y, screen.orientation.z, screen.orientation.w);
+            const vec = new THREE.Vector3((rect.x + parseFloat(positions[0])) * screen.scale, (rect.y + parseFloat(positions[1])) * screen.scale, parseFloat(positions[2]) * screen.scale);
+            vec.applyQuaternion(q);
+            positions = vec.add(new THREE.Vector3(screen.position.x, screen.position.y, screen.position.z)).toArray()
+        }
+
         return {
             x: parseFloat(positions[0]),
             y: parseFloat(positions[1]),
@@ -193,10 +201,11 @@ class XRModel extends HTMLElement {
 
     getScale() {
         let scales = this.getAttribute('scale').split(',');
+        let xrscale = (window.navigator && window.navigator.xrlocation) ? window.navigator.xrlocation.scale : 1;
         return {
-            x: parseFloat(scales[0]),
-            y: parseFloat(scales[1]),
-            z: parseFloat(scales[2])
+            x: parseFloat(scales[0]) * xrscale,
+            y: parseFloat(scales[1]) * xrscale,
+            z: parseFloat(scales[2]) * xrscale
         }
     }
 
@@ -235,6 +244,7 @@ function updateModel(element) {
         objLoader.load(objectPath, function (object) {
 
             scene.add(object);
+            element.object = object;
             object.position.set(position.x, position.y, position.z);
             object.scale.set(scale.x, scale.y, scale.z);
             object.rotation.set(rotation.x, rotation.y, rotation.z)
