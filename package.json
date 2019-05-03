@@ -6,8 +6,8 @@
     "example": "example"
   },
   "scripts": {
-    "test": "npm run build && yes | cp ./build/bin/xrloader.min.js ./example/public/scripts/xrloader.min.js && cd ./example && npm start",
-    "build": "uglifyjs --compress --mangle -o ./build/bin/xrloader.min.js ./build/src/xr_lib/OrbitControls.js ./build/src/xr_lib/WebVR.js ./build/src/xr_lib/MTLLoader.js ./build/src/xr_lib/OBJLoader.js ./build/src/xr_loader.js"
+    "test": "npm run build && yes | cp ./dist/xrloader.min.js ./example/public/scripts/xrloader.min.js && cd ./example && npm start",
+    "build": "uglifyjs --compress --mangle -o ./dist/xrloader.min.js ./build/src/xr_lib/OrbitControls.js ./build/src/xr_lib/WebVR.js ./build/src/xr_lib/MTLLoader.js ./build/src/xr_lib/OBJLoader.js ./build/src/xr_loader.js"
   },
   "repository": {
     "type": "git",
