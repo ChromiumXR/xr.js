@@ -1,13 +1,13 @@
-# ChromiumXR XRLoader
-A library that makes the integration with the ChromiumXR web browser simple and effective.
+# xr.js
+Make the integration with the ChromiumXR web browser simple and effective.
 
 ### Getting Started
-Include [Three.js](https://threejs.org/) and the xrloader.min.js
+Include [Three.js](https://threejs.org/) and the xr.min.js
 javascript file.
 
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js"></script>
-<script src="scripts/xrloader.min.js"></script>
+<script src="scripts/xr.min.js"></script>
 ```
 
 In the body of your index.html create an `<xr-mdl>` tag and fill it with the required

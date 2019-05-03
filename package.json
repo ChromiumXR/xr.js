@@ -1,7 +1,7 @@
 {
-  "name": "xrloader",
-  "version": "1.0.0",
-  "description": "A library that makes the integration with the ChromiumXR web browser simple and effective.",
+  "name": "xr.js",
+  "version": "0.1.0",
+  "description": "Make the integration with the ChromiumXR web browser simple and effective.",
   "directories": {
     "example": "example"
   },
@@ -11,15 +11,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ChromiumXR/xrloader.git"
+    "url": "git+https://github.com/ChromiumXR/xr.js.git"
   },
   "author": "Morgan Dean",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ChromiumXR/xrloader/issues"
+    "url": "https://github.com/ChromiumXR/xr.js/issues"
   },
-  "homepage": "https://github.com/ChromiumXR/xrloader#readme",
-  "dependencies": {
-    "express": "^4.16.4"
-  }
+  "homepage": "https://github.com/ChromiumXR/xr.js#readme"
 }
