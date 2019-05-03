@@ -8,7 +8,7 @@ const XRLoader = {
         let displayValue = options.desktop;
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.z = 200;
-
+        if (!navigator.getARDisplay) throw "XR_Loader Error: ChromiumXR browser not detected.";
         navigator.getARDisplay().then((compositor) => {
             console.log(compositor);
             const renderer = new THREE.WebGLRenderer({alpha: false, canvas: compositor.canvas});
@@ -232,15 +232,46 @@ function updateModel(element) {
     const rotation = element.getRotation();
 
     const mtlLoader = new THREE.MTLLoader();
-    mtlLoader.setTexturePath(texturePath);
-    mtlLoader.setPath(texturePath);
-    mtlLoader.load(materialPath, function (materials) {
+    if (texturePath) {
+        mtlLoader.setTexturePath(texturePath);
+        mtlLoader.setPath(texturePath);
+        mtlLoader.load(materialPath, function (materials) {
 
-        materials.preload();
+            materials.preload();
 
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(materials);
+            objLoader.setPath(texturePath);
+            objLoader.load(objectPath, function (object) {
+
+                scene.add(object);
+                element.object = object;
+                object.position.set(position.x, position.y, position.z);
+                object.scale.set(scale.x, scale.y, scale.z);
+                object.rotation.set(rotation.x, rotation.y, rotation.z)
+
+            });
+
+        });
+    } else if (materialPath) {
+        mtlLoader.load(materialPath, function (materials) {
+
+            materials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.load(objectPath, function (object) {
+
+                scene.add(object);
+                element.object = object;
+                object.position.set(position.x, position.y, position.z);
+                object.scale.set(scale.x, scale.y, scale.z);
+                object.rotation.set(rotation.x, rotation.y, rotation.z)
+
+            });
+
+        });
+    } else {
         const objLoader = new THREE.OBJLoader();
-        objLoader.setMaterials(materials);
-        objLoader.setPath(texturePath);
         objLoader.load(objectPath, function (object) {
 
             scene.add(object);
@@ -250,6 +281,5 @@ function updateModel(element) {
             object.rotation.set(rotation.x, rotation.y, rotation.z)
 
         });
-
-    });
+    }
 }
