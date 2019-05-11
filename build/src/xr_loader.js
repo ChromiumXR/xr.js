@@ -11,8 +11,9 @@ const XRLoader = {
         if (!navigator.getARDisplay) throw "XR_Loader Error: ChromiumXR browser not detected.";
         navigator.getARDisplay().then((compositor) => {
             console.log(compositor);
-            const renderer = new THREE.WebGLRenderer({alpha: false, canvas: compositor.canvas});
+            const renderer = new THREE.WebGLRenderer({alpha: true, canvas: compositor.canvas});
 
+            renderer.setClearColor(0xffffff, 0);
             let vrButton = WEBVR.createButton(renderer);
             vrButton.style.display = displayValue;
             document.body.appendChild(vrButton);
